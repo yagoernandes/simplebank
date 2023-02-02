@@ -20,7 +20,7 @@ RETURNING id, account_id, amount, created_at
 
 type CreateEntryParams struct {
 	AccountID int64
-	Amount    string
+	Amount    int64
 }
 
 func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry, error) {
@@ -33,18 +33,6 @@ func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry
 		&i.CreatedAt,
 	)
 	return i, err
-}
-
-const getBalance = `-- name: GetBalance :one
-SELECT SUM(amount) FROM entries
-WHERE account_id = $1
-`
-
-func (q *Queries) GetBalance(ctx context.Context, accountID int64) (int64, error) {
-	row := q.db.QueryRowContext(ctx, getBalance, accountID)
-	var sum int64
-	err := row.Scan(&sum)
-	return sum, err
 }
 
 const getEntries = `-- name: GetEntries :many

@@ -21,7 +21,7 @@ RETURNING id, from_account_id, to_account_id, amount, created_at
 type CreateTransferParams struct {
 	FromAccountID int64
 	ToAccountID   int64
-	Amount        string
+	Amount        int64
 }
 
 func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error) {

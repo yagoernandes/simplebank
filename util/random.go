@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -27,8 +26,8 @@ func RandomOwner() string {
 	return RandomString(10)
 }
 
-func RandomMoney() string {
-	return fmt.Sprintf("%v.00", RandomInt(10, 1000))
+func RandomMoney() int64 {
+	return RandomInt(10, 1000)
 }
 
 func RandomCurrency() string {

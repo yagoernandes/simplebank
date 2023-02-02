@@ -2,22 +2,22 @@ CREATE TABLE "account" (
   "id" bigserial PRIMARY KEY,
   "owner" varchar NOT NULL,
   "currency" varchar NOT NULL,
-  "balance" numeric(18,2) NOT NULL,
+  "balance" BIGINT NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
 );
 
 CREATE TABLE "entries" (
   "id" bigserial PRIMARY KEY,
-  "account_id" bigint NOT NULL,
-  "amount" numeric(18, 2) NOT NULL,
+  "account_id" BIGINT NOT NULL,
+  "amount" BIGINT NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
 );
 
 CREATE TABLE "transfer" (
   "id" bigserial PRIMARY KEY,
-  "from_account_id" bigint NOT NULL,
-  "to_account_id" bigint NOT NULL,
-  "amount" numeric(18, 2) NOT NULL,
+  "from_account_id" BIGINT NOT NULL,
+  "to_account_id" BIGINT NOT NULL,
+  "amount" BIGINT NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
 );
 

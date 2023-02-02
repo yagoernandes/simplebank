@@ -12,7 +12,7 @@ type Account struct {
 	ID        int64
 	Owner     string
 	Currency  string
-	Balance   string
+	Balance   int64
 	CreatedAt time.Time
 }
 
@@ -20,7 +20,7 @@ type Entry struct {
 	ID        int64
 	AccountID int64
 	// can be positive or negative
-	Amount    string
+	Amount    int64
 	CreatedAt time.Time
 }
 
@@ -29,6 +29,6 @@ type Transfer struct {
 	FromAccountID int64
 	ToAccountID   int64
 	// must be positive
-	Amount    string
+	Amount    int64
 	CreatedAt time.Time
 }
