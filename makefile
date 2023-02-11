@@ -16,10 +16,13 @@ migrateup:
 migratedown:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simplebank?sslmode=disable" -verbose down
 
+sql:
+	docker exec -it postgres psql -U root -d simplebank 
+
 sqlc:
 	sqlc generate
 
 test:
 	go test -v ./... -cover
 
-.PHONY: postgres startdb createdb dropdb migrateup migratedown sqlc test
+.PHONY: postgres startdb createdb dropdb migrateup migratedown sql sqlc test

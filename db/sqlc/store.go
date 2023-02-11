@@ -74,17 +74,76 @@ func (store *Store) TransferTx(ctx context.Context, arg CreateTransferParams) (T
 			return err
 		}
 
-		transferResult.FromAccount, err = q.GetAccount(ctx, arg.FromAccountID)
-		if err != nil {
-			return err
-		}
+		if arg.FromAccountID < arg.ToAccountID {
+			fromAccount, err := q.GetAccountForUpdate(ctx, arg.FromAccountID)
+			if err != nil {
+				return err
+			}
 
-		transferResult.ToAccount, err = q.GetAccount(ctx, arg.ToAccountID)
-		if err != nil {
-			return err
+			transferResult.FromAccount = fromAccount
+
+			toAccount, err := q.GetAccountForUpdate(ctx, arg.ToAccountID)
+			if err != nil {
+				return err
+			}
+
+			transferResult.ToAccount = toAccount
+
+			_, err = q.AddBalance(ctx, AddBalanceParams{
+				ID:     arg.FromAccountID,
+				Amount: -arg.Amount,
+			})
+			if err != nil {
+				return err
+			}
+
+			_, err = q.AddBalance(ctx, AddBalanceParams{
+				ID:     arg.ToAccountID,
+				Amount: arg.Amount,
+			})
+			if err != nil {
+				return err
+			}
+		} else {
+			toAccount, err := q.GetAccountForUpdate(ctx, arg.ToAccountID)
+			if err != nil {
+				return err
+			}
+
+			transferResult.ToAccount = toAccount
+
+			fromAccount, err := q.GetAccountForUpdate(ctx, arg.FromAccountID)
+			if err != nil {
+				return err
+			}
+
+			transferResult.FromAccount = fromAccount
+
+			_, err = q.AddBalance(ctx, AddBalanceParams{
+				ID:     arg.ToAccountID,
+				Amount: arg.Amount,
+			})
+			if err != nil {
+				return err
+			}
+
+			_, err = q.AddBalance(ctx, AddBalanceParams{
+				ID:     arg.FromAccountID,
+				Amount: -arg.Amount,
+			})
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
 	})
 	return transferResult, err
 }
+
+// analyzing this code the deadlock is possible because of the following:
+// 1. the first goroutine locks the account with id 1 and then tries to lock the account with id 2
+// 2. the second goroutine locks the account with id 2 and then tries to lock the account with id 1
+// 3. the first goroutine tries to lock the account with id 2 and waits for the second goroutine to unlock it
+// 4. the second goroutine tries to lock the account with id 1 and waits for the first goroutine to unlock it
+// 5. the deadlock happens
